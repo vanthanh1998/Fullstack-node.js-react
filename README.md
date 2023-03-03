@@ -7,4 +7,11 @@
 3/ npm install --save-exact body-parser@1.19.0 nodemon@2.0.12 @babel/core@7.15.5 @babel/node@7.15.4 @babel/preset-env@7.15.6
 => 5 package use fix lỗi import do verison cũ
 
+
+npm sequelize
+npm sequelize-cli
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+node_modules/.bin/sequelize init
+
+
  -->
