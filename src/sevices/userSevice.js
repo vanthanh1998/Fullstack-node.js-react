@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs"
 import db from "../models/index"
 
-
 const salt = bcrypt.genSaltSync(10);
 
 let createNewUser = async (data) => {
@@ -113,10 +112,70 @@ let deleteUserById = (userId) => {
     })
 }
 
+let handleUserLogin = (email, password) => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            let userData = {};
+            let isExist = await checkUserEmail(email);
+            if(isExist){
+                // user already exist
+                let user = await db.User.findOne({
+                    attributes: ['email', 'roleId', 'password'],
+                    where: { email: email },
+                    raw: true,
+                })
+                if(user){
+                    // compare pw
+                    let check = await bcrypt.compareSync(password, user.password); // false
+                    if(check){
+                        userData.errorCode = 0;
+                        userData.errorMessage = `OK`;
+                        console.log(user);
+                        delete user.password;
+                        userData.user = user;
+                    }else{
+                        userData.errorCode = 3;
+                        userData.errorMessage = `Wrong password`;
+                    }
+                }else{
+                    userData.errorCode = 2;
+                    userData.errorMessage = `User's not found!`;
+                }
+            }else{
+                userData.errorCode = 1;
+                userData.errorMessage = `Your's Email isn't exist in your system. Plz try other email!`;
+                // return error
+            }
+            resolve(userData);
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+let checkUserEmail = (userEmail) => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { email: userEmail }
+            })
+            if(user){
+                resolve(true);
+            }else{
+                resolve(false);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     createNewUser: createNewUser,
     getListUser : getListUser,
     getUserInfoById: getUserInfoById,
     postEditUser: postEditUser,
     deleteUserById: deleteUserById,
+    handleUserLogin: handleUserLogin,
+    checkUserEmail: checkUserEmail,
 }

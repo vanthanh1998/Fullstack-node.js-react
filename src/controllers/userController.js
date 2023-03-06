@@ -1,7 +1,5 @@
 import userSevice from "../sevices/userSevice"
 
-
-
 let getUser = (req, res) => {
     return res.render('user/create.ejs');
 }
@@ -44,6 +42,31 @@ let deleteUser = async (req, res) => {
     }
 }
 
+let handleLogin = async(req, res) => {
+    let email = req.body.email;
+    let password = req.body.password;
+
+    // check email exist
+    // compare pw
+    // return userInfo (role)
+    // access token: JWT (json web token)
+
+    if(!email || !password){
+        return res.status(500).json({
+            errorCode: 1, // use check login fail
+            message: 'Missing inputs parameter!'
+        })
+    }
+
+    let userData = await userSevice.handleUserLogin(email, password);
+
+    return res.status(200).json({
+        errorCode: userData.errorCode, // use check login fail
+        message: userData.errorMessage,
+        user: userData.user ? userData.user : {},
+    })
+}
+
 module.exports = {
     getUser: getUser,
     postUser: postUser,
@@ -51,4 +74,5 @@ module.exports = {
     getEditUser: getEditUser,
     postEditUser: postEditUser,
     deleteUser: deleteUser,
+    handleLogin: handleLogin,
 }
