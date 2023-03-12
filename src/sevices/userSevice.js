@@ -170,6 +170,32 @@ let checkUserEmail = (userEmail) => {
     })
 }
 
+let getAllUser = (userId) => {
+    return new Promise(async (resolve, reject) => { // promise => tránh việc bất đồng bộ xảy ra
+        try {
+            let users = '';
+            if(userId === 'ALL'){
+                users = await db.User.findAll({
+                    attributes: {
+                        exclude : ['password']
+                    }
+                });
+            }else if(userId && userId !== 'All'){
+                users = await db.User.findOne({
+                    where: { id: userId },
+                    attributes: {
+                        exclude : ['password']
+                    }
+                });
+            }
+
+            resolve(users);
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     createNewUser: createNewUser,
     getListUser : getListUser,
@@ -178,4 +204,5 @@ module.exports = {
     deleteUserById: deleteUserById,
     handleUserLogin: handleUserLogin,
     checkUserEmail: checkUserEmail,
+    getAllUser: getAllUser,
 }
